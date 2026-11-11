@@ -259,6 +259,14 @@ const ShopMart = (() => {
         class="hero-swatch size-7 rounded-full ring-2 ring-offset-2 ring-offset-ink transition-transform hover:scale-110 ${i === 0 ? "ring-moss-300" : "ring-white/30"}"
         style="background:${v.hex}"></button>
     `).join("");
+    document.querySelector("[data-hero-add]")?.addEventListener("click", (e) => {
+      const btn = e.currentTarget;
+      addToCart(1, 1, 0);
+      btn.innerHTML = `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>`;
+      setTimeout(() => {
+        btn.innerHTML = `<svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m-3.75 1.5A2.25 2.25 0 0 1 6.75 9h10.5a2.25 2.25 0 0 1 2.25 2.25l-.7 7.5a2.25 2.25 0 0 1-2.243 2.063H7.143a2.25 2.25 0 0 1-2.243-2.062l-.7-7.5Z"/></svg>`;
+      }, 1200);
+    });
     document.getElementById("hero-swatches").addEventListener("click", (e) => {
       const btn = e.target.closest("[data-hero-variant]");
       if (!btn) return;
