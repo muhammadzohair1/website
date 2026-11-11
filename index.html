@@ -1,62 +1,238 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopMart - Online Shopping</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <a class="logo" href="index.html">🛍️ ShopMart</a>
-    <form id="search-form" class="search">
-      <input id="search-input" type="search" placeholder="Search products..." aria-label="Search">
-      <button type="submit">Search</button>
-    </form>
-    <nav class="top-links">
-      <a href="index.html">Home</a>
-      <a href="cart.html" class="cart-link">Cart (<span id="cart-count">0</span>)</a>
-    </nav>
-  </header>
-
-  <main class="container">
-    <section class="hero">
-      <div>
-        <h1>Everything you need, delivered fast 🚀</h1>
-        <p>Shop electronics, fashion, home essentials, and more — with free shipping on orders over $50.</p>
-      </div>
-    </section>
-
-    <section class="controls">
-      <label>Category
-        <select id="category-filter">
-          <option value="all">All</option>
-        </select>
-      </label>
-      <label>Sort
-        <select id="sort-filter">
-          <option value="featured">Featured</option>
-          <option value="price-asc">Price: Low to High</option>
-          <option value="price-desc">Price: High to Low</option>
-          <option value="rating">Top Rated</option>
-        </select>
-      </label>
-    </section>
-
-    <section>
-      <div class="section-title"><h2>Products</h2></div>
-      <div id="product-grid" class="grid"></div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p>&copy; 2026 ShopMart · Demo ecommerce store · Made with 💜</p>
-  </footer>
-
-  <script src="app.js"></script>
+  <title>ShopMart — Shop More. Live Better.</title>
+  <meta name="description" content="Premium essentials for everyday comfort. Shop hoodies, tees, bottoms and accessories.">
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    ShopMart.initHome();
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'] },
+          colors: {
+            ink: '#0e120e',
+            moss: {
+              50: '#f3f6f0', 100: '#e3ecdd', 200: '#c9d9be', 300: '#a5bf94',
+              400: '#7ea06a', 500: '#5c8547', 600: '#476a36', 700: '#3a552e',
+              800: '#2d4225', 900: '#1c2b17', 950: '#111a0e'
+            },
+            cream: '#f5f3ec'
+          },
+          boxShadow: {
+            soft: '0 4px 24px -6px rgb(0 0 0 / 0.12)',
+            card: '0 8px 30px -8px rgb(17 26 14 / 0.25)'
+          },
+          animation: {
+            'fade-up': 'fadeUp .7s cubic-bezier(.22,1,.36,1) both',
+            'fade-in': 'fadeIn .8s ease both'
+          },
+          keyframes: {
+            fadeUp: { '0%': { opacity: 0, transform: 'translateY(24px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+            fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } }
+          }
+        }
+      }
+    }
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+  <style>
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+    .reveal.in { opacity: 1; transform: none; }
+    ::selection { background: #5c8547; color: #fff; }
+    html { scrollbar-gutter: stable; }
+  </style>
+</head>
+<body class="bg-cream text-ink font-sans antialiased">
+
+<!-- ================= NAVBAR ================= -->
+<header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-16 md:h-[72px] items-center justify-between">
+      <a href="#top" class="flex items-center gap-2 font-extrabold tracking-tight text-xl" aria-label="ShopMart home">
+        <span class="grid place-items-center size-9 rounded-xl bg-moss-500 text-white shadow-card">🛍️</span>
+        <span id="nav-logo-text" class="text-white transition-colors">Shop<span class="text-moss-400">Mart</span></span>
+      </a>
+      <nav class="hidden md:flex items-center gap-1" aria-label="Main">
+        <a href="#top" class="px-4 py-2 rounded-full text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 transition">Home</a>
+        <a href="#categories" class="px-4 py-2 rounded-full text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 transition">Collections</a>
+        <a href="#products" class="px-4 py-2 rounded-full text-sm font-semibold text-white/90 hover:text-white hover:bg-white/10 transition">Shop</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href="cart.html" class="relative inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/20 hover:bg-white/20 transition">
+          <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m-3.75 1.5A2.25 2.25 0 0 1 6.75 9h10.5a2.25 2.25 0 0 1 2.25 2.25l-.7 7.5a2.25 2.25 0 0 1-2.243 2.063H7.143a2.25 2.25 0 0 1-2.243-2.062l-.7-7.5Z"/></svg>
+          Cart <span id="cart-count" class="min-w-5 grid place-items-center rounded-full bg-moss-400 px-1.5 text-xs font-bold text-ink">0</span>
+        </a>
+        <button id="drawer-btn" class="md:hidden grid place-items-center size-10 rounded-full bg-white/10 ring-1 ring-white/20 text-white" aria-label="Open menu" aria-expanded="false">
+          <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile drawer -->
+  <div id="drawer" class="md:hidden fixed inset-0 z-50 hidden">
+    <div id="drawer-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <aside id="drawer-panel" class="absolute right-0 top-0 h-full w-72 max-w-[85vw] bg-ink text-white p-6 flex flex-col gap-2 translate-x-full transition-transform duration-300" aria-label="Mobile menu">
+      <div class="flex items-center justify-between mb-4">
+        <span class="font-extrabold text-lg">Menu</span>
+        <button id="drawer-close" class="grid place-items-center size-10 rounded-full hover:bg-white/10" aria-label="Close menu">
+          <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <a href="#top" class="drawer-link rounded-xl px-4 py-3 font-semibold hover:bg-white/10 transition">Home</a>
+      <a href="#categories" class="drawer-link rounded-xl px-4 py-3 font-semibold hover:bg-white/10 transition">Collections</a>
+      <a href="#products" class="drawer-link rounded-xl px-4 py-3 font-semibold hover:bg-white/10 transition">Shop</a>
+      <a href="cart.html" class="drawer-link mt-auto rounded-xl px-4 py-3 font-semibold bg-moss-500 text-center hover:bg-moss-600 transition">View Cart</a>
+    </aside>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section id="top" class="relative bg-ink text-white overflow-hidden">
+  <!-- pale sage panel behind product (right half, bleeds to top/right edge) -->
+  <div class="hidden lg:block absolute top-0 right-0 h-full w-[42%] bg-moss-200" aria-hidden="true">
+    <div class="absolute inset-0 opacity-40" style="background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.55), transparent 55%)"></div>
+    <div class="absolute top-8 right-8 text-[11px] font-bold uppercase tracking-[0.25em] text-ink/60">Minture Everyday ✦</div>
+    <div class="absolute bottom-8 right-8 flex items-center gap-3 text-xs font-semibold text-ink/60">
+      Follow Us On
+      <a href="#" aria-label="Facebook" class="grid place-items-center size-8 rounded-full bg-ink/10 hover:bg-ink/20 transition">📘</a>
+      <a href="#" aria-label="Instagram" class="grid place-items-center size-8 rounded-full bg-ink/10 hover:bg-ink/20 transition">📷</a>
+      <a href="#" aria-label="Twitter" class="grid place-items-center size-8 rounded-full bg-ink/10 hover:bg-ink/20 transition">𝕏</a>
+    </div>
+  </div>
+  <div class="lg:hidden absolute inset-y-0 right-0 w-1/3 bg-moss-200/90" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute -top-40 -left-40 size-[480px] rounded-full bg-moss-500/20 blur-3xl"></div>
+
+  <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-28 md:pt-32 pb-16 md:pb-20">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+      <!-- Left copy -->
+      <div class="animate-fade-up">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/5 ring-1 ring-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-moss-300">
+          New Arrivals — 30% Off
+        </span>
+        <h1 class="mt-6 text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-[1.02] tracking-tight">
+          Shop more.<br>
+          <em class="italic font-light text-moss-300">Live better.</em>
+        </h1>
+        <p class="mt-6 max-w-md text-white/60 text-base sm:text-lg leading-relaxed">
+          Subtle fit is sized to cover the areas whenever it's needed. Our premium essentials blend comfort, quality and timeless design.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="#products" class="group inline-flex items-center gap-2 rounded-full bg-moss-400 px-6 py-3 text-sm font-bold text-ink hover:bg-moss-300 transition shadow-card">
+            Shop Now
+            <svg class="size-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5"/></svg>
+          </a>
+          <a href="#categories" class="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold text-white/90 ring-1 ring-white/20 hover:bg-white/10 transition">
+            Explore the Collection
+          </a>
+        </div>
+        <!-- Color variant swatches -->
+        <div class="mt-10 flex items-center gap-4">
+          <div class="flex items-center gap-3" id="hero-swatches" role="radiogroup" aria-label="Choose colorway"></div>
+          <span class="text-xs text-white/40 font-medium" id="hero-swatch-label">Forest Green</span>
+        </div>
+        <!-- stats -->
+        <div class="mt-8 grid grid-cols-3 max-w-md gap-6">
+          <div><div class="text-2xl font-extrabold">15+</div><div class="text-xs text-white/50 mt-1">Styles</div></div>
+          <div><div class="text-2xl font-extrabold">60+</div><div class="text-xs text-white/50 mt-1">Colors</div></div>
+          <div><div class="text-2xl font-extrabold">150m</div><div class="text-xs text-white/50 mt-1">Sold</div></div>
+        </div>
+      </div>
+
+      <!-- Right visual: product bridging dark + sage zones -->
+      <div class="relative animate-fade-in [animation-delay:.2s] -mt-6 lg:-mt-16">
+        <!-- ranking chip (on dark zone) -->
+        <div class="absolute -left-2 sm:left-0 top-10 z-10 rounded-2xl bg-ink/85 backdrop-blur-md ring-1 ring-white/15 px-4 py-3 shadow-card max-w-[190px]">
+          <div class="text-[10px] uppercase tracking-widest text-white/50 font-bold">Ranking</div>
+          <div class="flex items-center gap-1.5 mt-1">
+            <span class="text-lg font-extrabold text-amber-300">★ 4.9</span>
+            <span class="text-amber-300 text-xs">★★★★★</span>
+          </div>
+          <div class="mt-1.5 text-xs font-bold text-white">Louthes Hoodie!</div>
+          <p class="mt-1 text-[10px] text-white/50 leading-relaxed">Most stylish died pullover version of this hoodies have unique modern design & comfortable tonal wovin, apparently.</p>
+        </div>
+        <!-- price + add-to-cart chip (on sage zone) -->
+        <div class="absolute right-2 sm:right-6 bottom-14 z-10 rounded-2xl bg-white text-ink pl-4 pr-2 py-2.5 shadow-card flex items-center gap-3">
+          <div>
+            <div class="text-[10px] uppercase tracking-widest text-ink/50 font-bold">Today's Price Only</div>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <span class="text-lg font-extrabold" id="hero-price">$72</span>
+              <s class="text-xs text-ink/40" id="hero-old-price">$92</s>
+            </div>
+          </div>
+          <button data-hero-add class="grid place-items-center size-10 rounded-xl bg-ink text-white hover:bg-moss-700 transition shadow-soft" aria-label="Add featured hoodie to cart">
+            <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m-3.75 1.5A2.25 2.25 0 0 1 6.75 9h10.5a2.25 2.25 0 0 1 2.25 2.25l-.7 7.5a2.25 2.25 0 0 1-2.243 2.063H7.143a2.25 2.25 0 0 1-2.243-2.062l-.7-7.5Z"/></svg>
+          </button>
+        </div>
+        <figure class="relative mx-auto max-w-md lg:max-w-none lg:pr-4">
+          <img id="hero-image" src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=900&q=85" alt="Premium hoodie in forest green"
+               class="relative w-full object-cover aspect-[4/5] shadow-card"
+               width="900" height="1125" loading="eager" fetchpriority="high">
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CATEGORIES ================= -->
+<section id="categories" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+  <div class="reveal flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Discover Your Style</h2>
+      <p class="mt-2 text-ink/50 max-w-md">Curated collections designed for comfort and expression.</p>
+    </div>
+    <a href="#products" class="inline-flex items-center gap-1.5 text-sm font-bold text-moss-600 hover:text-moss-500 transition">
+      View All Collection
+      <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5"/></svg>
+    </a>
+  </div>
+
+  <div id="category-grid" class="reveal mt-8 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+</section>
+
+<!-- ================= PRODUCTS ================= -->
+<section id="products" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-20 md:pb-28">
+  <div class="reveal flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Trending Now</h2>
+      <p class="mt-2 text-ink/50">Fresh drops with new colorways landing weekly.</p>
+    </div>
+    <div id="filter-tabs" class="flex flex-wrap gap-2" role="tablist" aria-label="Filter products"></div>
+  </div>
+
+  <div id="product-grid" class="reveal mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+
+  <p id="product-status" class="mt-10 text-center text-ink/40 text-sm" role="status"></p>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="bg-ink text-white/60">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-10 border-b border-white/10">
+      <a href="#top" class="flex items-center gap-2 font-extrabold text-xl text-white">
+        <span class="grid place-items-center size-9 rounded-xl bg-moss-500 text-white">🛍️</span> Shop<span class="-ml-2 text-moss-400">Mart</span>
+      </a>
+      <nav class="flex flex-wrap gap-x-8 gap-y-2 text-sm font-semibold" aria-label="Footer">
+        <a href="#top" class="hover:text-white transition">Home</a>
+        <a href="#categories" class="hover:text-white transition">Collections</a>
+        <a href="#products" class="hover:text-white transition">Shop</a>
+        <a href="cart.html" class="hover:text-white transition">Cart</a>
+      </nav>
+      <div class="flex gap-3">
+        <a href="#" aria-label="Facebook" class="grid place-items-center size-10 rounded-full bg-white/5 hover:bg-white/15 transition">📘</a>
+        <a href="#" aria-label="Instagram" class="grid place-items-center size-10 rounded-full bg-white/5 hover:bg-white/15 transition">📷</a>
+        <a href="#" aria-label="Twitter" class="grid place-items-center size-10 rounded-full bg-white/5 hover:bg-white/15 transition">𝕏</a>
+        <a href="https://github.com" aria-label="GitHub" class="grid place-items-center size-10 rounded-full bg-white/5 hover:bg-white/15 transition">🐙</a>
+      </div>
+    </div>
+    <p class="pt-8 text-xs text-white/40">© 2026 ShopMart · Demo store · Built with Tailwind CSS</p>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>ShopMart.initHome();</script>
 </body>
 </html>
