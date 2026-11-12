@@ -187,36 +187,11 @@ const ShopMart = (() => {
     });
   }
 
-  /* ---------- Home ---------- */
+  /* ---------- Shared navbar + mobile drawer ---------- */
 
-  async function initHome() {
-    updateCartCount();
-    const grid = document.getElementById("product-grid");
-    const tabs = document.getElementById("filter-tabs");
-    const catGrid = document.getElementById("category-grid");
-    const status = document.getElementById("product-status");
-
-    // Navbar scroll effect
-    const nav = document.getElementById("nav");
-    const logoText = document.getElementById("nav-logo-text");
-    const onScroll = () => {
-      const dark = window.scrollY > 24;
-      nav.classList.toggle("bg-cream/85", dark);
-      nav.classList.toggle("backdrop-blur-xl", dark);
-      nav.classList.toggle("shadow-soft", dark);
-      if (logoText) logoText.classList.toggle("!text-ink", dark);
-      nav.querySelectorAll("nav a").forEach(a => {
-        a.classList.toggle("text-ink/80", dark);
-        a.classList.toggle("hover:text-ink", dark);
-        a.classList.toggle("text-white/90", !dark);
-        a.classList.toggle("hover:text-white", !dark);
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    // Mobile drawer
+  function initNav() {
     const drawer = document.getElementById("drawer");
+    if (!drawer) return;
     const panel = document.getElementById("drawer-panel");
     const openBtn = document.getElementById("drawer-btn");
     const closeDrawer = () => {
@@ -234,6 +209,47 @@ const ShopMart = (() => {
     document.getElementById("drawer-close")?.addEventListener("click", closeDrawer);
     document.getElementById("drawer-overlay")?.addEventListener("click", closeDrawer);
     drawer?.querySelectorAll(".drawer-link").forEach(a => a.addEventListener("click", closeDrawer));
+  }
+
+  /* ---------- Home ---------- */
+
+  async function initHome() {
+    updateCartCount();
+    initNav();
+    const grid = document.getElementById("product-grid");
+    const tabs = document.getElementById("filter-tabs");
+    const catGrid = document.getElementById("category-grid");
+    const status = document.getElementById("product-status");
+
+    // Navbar scroll effect
+    const nav = document.getElementById("nav");
+    const logoText = document.getElementById("nav-logo-text");
+    const onScroll = () => {
+      const dark = window.scrollY > 24;
+      nav.classList.toggle("bg-cream/85", dark);
+      nav.classList.toggle("backdrop-blur-xl", dark);
+      nav.classList.toggle("shadow-soft", dark);
+      if (logoText) logoText.classList.toggle("!text-ink", dark);
+      const cartBtn = document.getElementById("nav-cart");
+      if (cartBtn) {
+        cartBtn.classList.toggle("bg-white/10", !dark);
+        cartBtn.classList.toggle("text-white", !dark);
+        cartBtn.classList.toggle("ring-white/20", !dark);
+        cartBtn.classList.toggle("hover:bg-white/20", !dark);
+        cartBtn.classList.toggle("bg-ink", dark);
+        cartBtn.classList.toggle("text-white", dark);
+        cartBtn.classList.toggle("ring-transparent", dark);
+        cartBtn.classList.toggle("hover:bg-moss-700", dark);
+      }
+      nav.querySelectorAll("nav a").forEach(a => {
+        a.classList.toggle("text-ink/80", dark);
+        a.classList.toggle("hover:text-ink", dark);
+        a.classList.toggle("text-white/90", !dark);
+        a.classList.toggle("hover:text-white", !dark);
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     // Scroll reveal
     const io = new IntersectionObserver(entries => {
@@ -241,17 +257,53 @@ const ShopMart = (() => {
     }, { threshold: 0.08 });
     document.querySelectorAll(".reveal").forEach(el => io.observe(el));
 
+    // Hero entrance sequence + premium motion
+    const heroSection = document.getElementById("top");
+    if (heroSection) {
+      requestAnimationFrame(() => requestAnimationFrame(() => heroSection.classList.add("hero-in")));
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // subtle cursor parallax on the hero image (desktop only)
+      const heroImg = heroSection.querySelector(".hero-parallax");
+      if (heroImg && !reducedMotion && matchMedia("(hover: hover) and (min-width: 1024px)").matches) {
+        heroSection.addEventListener("mousemove", (e) => {
+          const r = heroSection.getBoundingClientRect();
+          const x = ((e.clientX - r.left) / r.width - 0.5) * 10; // ±10px
+          const y = ((e.clientY - r.top) / r.height - 0.5) * 10;
+          heroImg.style.transform = `translate3d(${x}px, ${y}px, 0) scale(1.04)`;
+        });
+        heroSection.addEventListener("mouseleave", () => {
+          heroImg.style.transform = "";
+        });
+      }
+
+      // count-up stats (once)
+      heroSection.querySelectorAll("[data-count]").forEach((el) => {
+        const target = Number(el.dataset.count);
+        const suffix = el.dataset.suffix || "";
+        if (reducedMotion) { el.textContent = target + suffix; return; }
+        const t0 = performance.now() + 900; // start after entrance sequence
+        const dur = 1200;
+        (function tick(now) {
+          const p = Math.min(Math.max((now - t0) / dur, 0), 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(performance.now());
+      });
+    }
+
     // Hero swatches
     const heroImage = document.getElementById("hero-image");
     const heroLabel = document.getElementById("hero-swatch-label");
     const heroPrice = document.getElementById("hero-price");
     const heroOld = document.getElementById("hero-old-price");
     const HERO_IMAGES = [
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80",   // green hoodie
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80",
-      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80", // beige
+      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80", // cream sweatshirt
       "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=800&q=80", // blue
-      "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&q=80"     // dark
+      "https://images.unsplash.com/photo-1548126032-079a0fb0099d?w=800&q=80",    // dark
+      "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=800&q=80&sat=-100", // mono
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=800&q=80"     // green hoodie
     ];
     document.getElementById("hero-swatches").innerHTML = PALETTES.slice(0, 5).map((v, i) => `
       <button type="button" role="radio" aria-checked="${i === 0}" data-hero-variant="${i}" title="${v.name}"
@@ -276,8 +328,12 @@ const ShopMart = (() => {
         b.classList.toggle("ring-white/30", i !== idx);
         b.setAttribute("aria-checked", String(i === idx));
       });
-      heroImage.src = HERO_IMAGES[idx];
-      heroLabel.textContent = PALETTES[idx].name;
+      heroImage.src = HERO_IMAGES[idx].replace("w=800", "w=1200");
+      heroLabel.classList.add("swap");
+      setTimeout(() => {
+        heroLabel.textContent = PALETTES[idx].name;
+        heroLabel.classList.remove("swap");
+      }, 200);
     });
 
     // Load products
@@ -660,5 +716,5 @@ const ShopMart = (() => {
     }
   }
 
-  return { initHome, initProduct, initCart, initCheckout, initSuccess };
+  return { initNav, initHome, initProduct, initCart, initCheckout, initSuccess };
 })();

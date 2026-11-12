@@ -1,4 +1,4 @@
-# ShopMart
+﻿# ShopMart
 
 A simple e-commerce demo storefront built with **Express** and **Stripe Checkout**.
 
@@ -13,14 +13,14 @@ A simple e-commerce demo storefront built with **Express** and **Stripe Checkout
 
 | File | Purpose |
 |---|---|
-| `server.js` | Express server — serves static files and creates Stripe Checkout sessions |
+| `server.js` | Express server â€” serves static files and creates Stripe Checkout sessions |
 | `index.html` | Home / product listing page |
 | `product.html` | Individual product page |
 | `cart.html` | Shopping cart page |
 | `checkout.html` | Checkout page |
 | `success.html` | Post-payment success page |
-| `app.js` | Front-end logic (cart management, API calls) |
-| `styles.css` | Global styles |
+| `assets/js/app.js` | Front-end logic (cart management, API calls) |
+| `docs/styles-legacy.css` | Global styles |
 
 ## Getting Started
 
@@ -65,4 +65,5 @@ A simple e-commerce demo storefront built with **Express** and **Stripe Checkout
 
 - The cart is stored client-side in `localStorage` and sent to the server at checkout time.
 - Use Stripe test cards (e.g. `4242 4242 4242 4242`) to complete test purchases.
-- Never commit your real `.env` file — it is excluded via `.gitignore`.
+- Never commit your real `.env` file â€” it is excluded via `.gitignore`.
+
